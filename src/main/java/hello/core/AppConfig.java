@@ -19,14 +19,17 @@ public class AppConfig {
     //이렇게 Spring Container에 등록하면 메서드 이름으로 등록이 되는데 @Bean(name="")으로 등록될 이름을 바꿀 수도 있음
     @Bean
     public MemberService memberService(){
+        System.out.println("call AppConfig.memberService");
         return new MemberServiceImpl(memberRepository());
     }
     @Bean
     public MemoryMemberRepository memberRepository() {
+        System.out.println("call AppConfig.memberRepository");
         return new MemoryMemberRepository();
     }
     @Bean
     public OrderService orderService(){
+        System.out.println("call AppConfig.orderService");
         return new OrderServiceImpl(memberRepository(), discountPolicy());
     }
     @Bean
