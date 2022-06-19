@@ -12,6 +12,9 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * 애플리케이션의 구성(설정) 정보를 담당한다.
+ * 또한, @Configuration을 붙이면 바이트코드를 조작하는 CGLIB 기술을 사용해서
+ * 싱글톤을 보장하지만, 만약 @Bean만 적용하면 CGLIB 기술을 사용하지 않는다.
+ * ConfigurationSingletonTest.java의 configurationDeep() 메서드 주석 부분 확인
  */
 @Configuration
 public class AppConfig {
