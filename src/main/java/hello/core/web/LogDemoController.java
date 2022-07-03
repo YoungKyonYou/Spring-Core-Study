@@ -29,6 +29,10 @@ public class LogDemoController {
     public String logDemo(HttpServletRequest request) throws InterruptedException {
       //  MyLogger myLogger = myLoggerObjectProvider.getObject();
         String requestURL = request.getRequestURI().toString();
+
+        //myLogger =class hello.core.common.MyLogger$$EnhancerBySpringCGLIB$$e5d49042
+
+        System.out.println("myLogger ="+myLogger.getClass());
         myLogger.setRequestURL(requestURL);
 
         myLogger.log("controller test");
