@@ -2,8 +2,9 @@ package hello.core.scope;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.ObjectFactory;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Scope;
 
@@ -50,7 +51,33 @@ public class SingletonWithPrototypeTest1 {
          Assertions.assertThat(count2).isEqualTo(1);
 
     }
+
     //scope의 디폴트가 싱글톤이라 안해도 되지만 그냥 명확하게 하기 위해서 적음
+    @Scope("singleton")
+    static class ClientBean{
+
+        /**
+         * provider는 .getObject()를 호출하면 프로토타입 빈을 찾아서 반환해주는 역할을 한다.
+         * 즉 찾아서 제공하는 역할만 한다. 우리가 원했던 필요할 때마다 객체를 새로 생성해주게 할 수 있는 것이다(Prototype scope)
+         * ObjectProvider는 ObjectFactory를 상속받는다. 결론적으로 ObjectFactory는 기능이 하나 있는데 ObjectProvider는 좀 더 기능을 제공한다.
+         * ObjectProvider의 getObject()를 호출하면 내부에서는 스프링 컨테이너를 통해 해당 빈을 찾아서 반환한다.
+         * 스프링 제공하는 기능을 사용하지만, 기능이 단순하므로 단위테스트를 만들거나 mock코드를 만들기가 훨씬 쉬워진다.
+         * ObjectProvider는 지금 딱 필요한 DL 정도의 기능만 제공한다.
+         */
+        @Autowired
+        private ObjectProvider<PrototypeBean> prototypeBeanProvider;
+
+        @Autowired
+        private ObjectFactory<PrototypeBean> prototypeBeanObjectFactory;
+
+        public int logic(){
+            PrototypeBean prototypeBean = prototypeBeanProvider.getObject();
+            prototypeBean.addCount();
+            int count= prototypeBean.getCount();
+            return count;
+        }
+    }
+/*    //scope의 디폴트가 싱글톤이라 안해도 되지만 그냥 명확하게 하기 위해서 적음
     @Scope("singleton")
     static class ClientBean{
      //   private final PrototypeBean prototypeBean; //생성시점에 주입이 된다.
@@ -58,11 +85,11 @@ public class SingletonWithPrototypeTest1 {
         @Autowired
         ApplicationContext applicationContext;
 
-/*        //이 시점에서 스프링컨테이너에 PrototypeBean를 요청하게 된다. 그러면 컨테이너는 PrototypeBean를 만들어서 할당해준다.
+*//*        //이 시점에서 스프링컨테이너에 PrototypeBean를 요청하게 된다. 그러면 컨테이너는 PrototypeBean를 만들어서 할당해준다.
         @Autowired
         public ClientBean(PrototypeBean prototypeBean){
             this.prototypeBean=prototypeBean;
-        }*/
+        }*//*
 
         public int logic(){
             PrototypeBean prototypeBean=applicationContext.getBean(PrototypeBean.class);
@@ -72,7 +99,7 @@ public class SingletonWithPrototypeTest1 {
             int count= prototypeBean.getCount();
             return count;
         }
-    }
+    }*/
 
 
     @Scope("prototype")
