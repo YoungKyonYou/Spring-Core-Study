@@ -2,6 +2,9 @@ package hello.core.lifecycle;
 
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 //초기화, 소멸 인터페이스 단점
 /**
  * 이 인터페이스는 스프링 전용 인터페이스이다. 해당 코드가 스프링 전용 인터페이스에 의존한다.
@@ -38,7 +41,26 @@ public class NetworkClient /*implements InitializingBean, DisposableBean*/ {
     }
 
 
+    /**
+     * 결론적으로 이런 어노테이션을 쓰면 된다!!
+     * 이것은 스프링에 종속적인 기술이 아니라 자바 표준이다. 스프링이 아닌 다른 컨테이너에서도 동작한다.
+     * 유일한 단점은 외부 라이브러리에는 적용하지 못한다는 것이다. 외부 라이브러리를 초기화, 종료 해야 한다면 @Bean 기능을 사용하자(initMethod="init", destroyMethod="close")
+     * 코드를 고칠 수 없는 외부 라이브러리를 초기화, 종료해야 하면 @Bean의 initMethod, destroyMethod를 사용하자
+     */
+    @PostConstruct
     public void init() {
+        System.out.println("NetworkClient.afterPropertiesSet");
+        connect();
+        call("초기화 연결 메시지");
+    }
+    @PreDestroy
+    public void close() {
+        System.out.println("NetworkClient.destroy");
+        disconnect();
+    }
+
+
+/*    public void init() {
         System.out.println("NetworkClient.afterPropertiesSet");
         connect();
         call("초기화 연결 메시지");
@@ -46,7 +68,7 @@ public class NetworkClient /*implements InitializingBean, DisposableBean*/ {
     public void close() {
         System.out.println("NetworkClient.destroy");
         disconnect();
-    }
+    }*/
 
 
 /*    //스프링이 의존관계 주입이 끝나면 호출해주는 함수
